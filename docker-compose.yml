@@ -1,6 +1,21 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hirable.app
+    ports:
+      - "3021:3021"
+    depends_on:
+      - postgres
+      - localstack
+    volumes:
+      - ./src:/home/node/app/src
+      - /home/node/app/node_modules
+
   postgres:
     image: postgres:latest
+    container_name: hirable.pg
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -9,11 +24,10 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    container_name: hirable.pg
 
   localstack:
-    container_name: hirable.localstack
     image: localstack/localstack
+    container_name: hirable.localstack
     ports:
       - "127.0.0.1:4566:4566"
       - "127.0.0.1:4510-4559:4510-4559"
@@ -24,14 +38,14 @@ services:
       - SERVICES=sqs,s3
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
-      - "localstack_data:/var/lib/localstack"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: sbd2-pgadmin
+    container_name: hirable-pgadmin
     ports:
-      - 8000:80
+      - "8000:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
