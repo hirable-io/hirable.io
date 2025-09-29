@@ -8,8 +8,9 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "start:dev": "tsx src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "make docker-test && make docker-test-down && exit 1",
     "lint": "eslint",
+    "swagger": "ts-node src/infra/docs/swagger/index.ts",
     "migration:generate": "export $(cat ./env/.env.local | xargs) && tsx ./node_modules/typeorm/cli.js migration:generate -d ./src/infra/orm/typeorm/datasource.ts"
   },
   "repository": {
@@ -26,6 +27,7 @@
   "homepage": "https://github.com/open-unb/hirable#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "cpf-cnpj-validator": "^1.0.3",
     "express": "^5.1.0",
@@ -35,6 +37,7 @@
     "pino": "^9.11.0",
     "pino-pretty": "^13.1.1",
     "rsdi": "^3.0.4",
+    "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.27",
     "zod": "^3.24.4"
   },
@@ -47,11 +50,15 @@
     "@types/express": "^5.0.3",
     "@types/module-alias": "^2.0.4",
     "@types/node": "^24.5.2",
+    "@types/swagger-ui-express": "^4.1.8",
     "eslint": "^9.36.0",
     "globals": "^16.4.0",
+    "swagger-autogen": "^2.23.7",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.44.1"
+    "typescript-eslint": "^8.44.1",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
   }
 }
