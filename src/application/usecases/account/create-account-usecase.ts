@@ -14,45 +14,97 @@ export class CreateAccountUseCase {
 
   async execute(data: CreateAccountUseCase.Input): Promise<CreateAccountUseCase.Output> {
     const validatedData = await this.validator.validate(data);
+    const now = new Date();
 
-    const passwordHash = await this.hashingService.hash(validatedData.user.password);
-    
+    const user = await this.createUser(validatedData, now);
+
+    const candidate =
+      validatedData.candidate && user.role === Roles.CANDIDATE
+        ? await this.createCandidate(user.id, validatedData.candidate, now)
+        : undefined;
+
+    const company =
+      validatedData.company && user.role === Roles.EMPLOYER
+        ? await this.createCompany(user.id, validatedData.company, now)
+        : undefined;
+
+    return { user, candidate, company };
+  }
+
+  private async createUser(
+    data: CreateAccountUseCase.Input,
+    now: Date,
+  ): Promise<CreateAccountUseCase.UserOutput> {
+    const passwordHash = await this.hashingService.hash(data.user.password);
+
     const user = await this.userRepository.create({
       id: randomUUID(),
-      email: validatedData.user.email,
+      email: data.user.email,
+      phone: data.user.phone,
       passwordHash,
-      role: validatedData.user.role,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      phone: validatedData.user.phone,
+      role: data.user.role,
+      createdAt: now,
+      updatedAt: now,
     });
 
-    if (validatedData.candidate) {
-      await this.candidateRepository.create({
-        id: randomUUID(),
-        userId: user.id,
-        fullName: validatedData.candidate.fullName,
-        bio: validatedData.candidate.bio,
-        tags: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-    }
-  
-    if (validatedData.company) {
-      await this.companyRepository.create({
-        id: randomUUID(),
-        userId: user.id,
-        name: validatedData.company.name,
-        document: validatedData.company.document,
-        contactName: validatedData.company.contactName,
-        phone: validatedData.company.phone,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-    }
+    return {
+      id: user.id,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+    };
+  }
 
-    return;
+  private async createCandidate(
+    userId: string,
+    data: CreateAccountUseCase.Input['candidate'],
+    now: Date,
+  ): Promise<CreateAccountUseCase.CandidateOutput> {
+    if (!data) throw new Error('Candidate data is required');
+
+    const candidate = await this.candidateRepository.create({
+      id: randomUUID(),
+      userId,
+      fullName: data.fullName,
+      bio: data.bio,
+      tags: [],
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    return {
+      id: candidate.id,
+      fullName: candidate.fullName,
+      bio: candidate.bio,
+      tags: candidate.tags.map(tag => ({ id: tag.id, name: tag.name })),
+    };
+  }
+
+  private async createCompany(
+    userId: string,
+    data: CreateAccountUseCase.Input['company'],
+    now: Date,
+  ): Promise<CreateAccountUseCase.CompanyOutput> {
+    if (!data) throw new Error('Company data is required');
+
+    const company = await this.companyRepository.create({
+      id: randomUUID(),
+      userId,
+      name: data.name,
+      document: data.document,
+      contactName: data.contactName,
+      phone: data.phone,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    return {
+      id: company.id,
+      name: company.name,
+      document: company.document,
+      contactName: company.contactName,
+      phone: company.phone,
+    };
   }
 }
 
@@ -76,5 +128,31 @@ export namespace CreateAccountUseCase {
     };
   };
 
-  export type Output = void;
+  export type UserOutput = {
+    id: string;
+    email: string;
+    phone: string;
+    role: string;
+  };
+
+  export type CandidateOutput = {
+    id: string;
+    fullName: string;
+    bio: string;
+    tags: Array<{ id: string; name: string }>;
+  };
+
+  export type CompanyOutput = {
+    id: string;
+    name: string;
+    document: string;
+    contactName: string;
+    phone: string;
+  };
+
+  export type Output = {
+    user: UserOutput;
+    candidate?: CandidateOutput;
+    company?: CompanyOutput;
+  };
 }

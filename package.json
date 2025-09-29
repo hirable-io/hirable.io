@@ -27,6 +27,7 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
+    "cpf-cnpj-validator": "^1.0.3",
     "express": "^5.1.0",
     "jiti": "^2.6.0",
     "module-alias": "^2.2.3",

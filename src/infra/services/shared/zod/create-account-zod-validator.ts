@@ -2,6 +2,7 @@ import { ValidationError } from '@/application/errors/validation-error';
 import { Validator } from '@/application/services';
 import { CreateAccountUseCase } from '@/application/usecases/account';
 import { Roles } from '@/domain';
+import { cnpj } from 'cpf-cnpj-validator';
 import z from 'zod';
 
 export class CreateAccountZodValidator implements Validator<CreateAccountUseCase.Input> {
@@ -19,7 +20,9 @@ export class CreateAccountZodValidator implements Validator<CreateAccountUseCase
       }).optional(),
       company: z.object({
         name: z.string().min(2),
-        document: z.string().transform((doc) => doc.replace(/[^\d]/g, '')).pipe(z.string().length(14)),
+        document: z
+        .string()
+        .refine(cnpj.isValid, { message: 'Document must be a valid CNPJ' }),
         contactName: z.string().min(3),
         phone: z.string().nonempty().transform((phone) => phone.replace(/\D/g, '')),
       }).optional(),
