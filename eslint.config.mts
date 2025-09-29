@@ -17,6 +17,7 @@ export default tseslint.config(
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
       ],
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-namespace': 'off',
       'no-unused-vars': 'off',
       'no-console': 'warn',
       'semi': ['error', 'always'],
