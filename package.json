@@ -9,7 +9,8 @@
     "start": "node dist/server.js",
     "start:dev": "tsx src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migration:generate": "export $(cat ./env/.env.local | xargs) && tsx ./node_modules/typeorm/cli.js migration:generate -d ./src/infra/orm/typeorm/datasource.ts"
   },
   "repository": {
     "type": "git",

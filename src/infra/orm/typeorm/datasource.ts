@@ -1,11 +1,27 @@
 import { DataSource } from 'typeorm';
 import { env } from '@/env';
 import logger from '@/infra/logger';
+import {
+  UserEntity,
+  CompanyEntity,
+  CandidateEntity,
+  TagEntity,
+} from '@/infra/orm/typeorm/entities';
+import {
+  AddInitialEntities,
+} from '@/infra/orm/typeorm/migrations';
 
 const defaultConfig = {
   migrationsRun: true,
-  entities: [],
-  migrations: [],
+  entities: [
+    UserEntity,
+    CompanyEntity,
+    CandidateEntity,
+    TagEntity,
+  ],
+  migrations: [
+    AddInitialEntities,
+  ],
 };
 
 export const dataSource = new DataSource({
