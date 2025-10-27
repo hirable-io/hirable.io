@@ -16,4 +16,24 @@ export class CompanyTypeOrmRepository implements CompanyRepository {
 
     return company;
   }
+
+  async findBy(input: CompanyRepository.FindBy.Input): Promise<CompanyRepository.FindBy.Output> {
+    const queryBuilder = this.repository.createQueryBuilder('company');
+
+    if (input.document) {
+      queryBuilder.andWhere('company.document = :document', { document: input.document });
+    }
+
+    if (input.id) {
+      queryBuilder.andWhere('company.id = :id', { id: input.id });
+    }
+
+    if (input.userId) {
+      queryBuilder.andWhere('company.userId = :userId', { userId: input.userId });
+    }
+
+    const company = await queryBuilder.getOne();
+
+    return company;
+  }
 }
