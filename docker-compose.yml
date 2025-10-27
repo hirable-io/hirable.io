@@ -1,20 +1,20 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: hirable.app
-    ports:
-      - "3021:3021"
-    depends_on:
-      - postgres
-      - localstack
-    volumes:
-      - ./src:/home/node/app/src
-      - /home/node/app/node_modules
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: hirable.app
+  #   ports:
+  #     - "3021:3021"
+  #   depends_on:
+  #     - postgres
+  #     - localstack
+  #   volumes:
+  #     - ./src:/home/node/app/src
+  #     - /home/node/app/node_modules
 
   postgres:
-    image: postgres:latest
+    image: postgres:13
     container_name: hirable.pg
     environment:
       POSTGRES_USER: postgres
