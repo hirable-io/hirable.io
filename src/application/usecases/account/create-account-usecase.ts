@@ -1,3 +1,4 @@
+import { AlreadyExistsError } from '@/application/errors';
 import { CandidateRepository, CompanyRepository, UserRepository } from '@/application/repositories';
 import { HashingService, Validator } from '@/application/services';
 import { Roles } from '@/domain';
@@ -14,6 +15,8 @@ export class CreateAccountUseCase {
 
   async execute(data: CreateAccountUseCase.Input): Promise<CreateAccountUseCase.Output> {
     const validatedData = await this.validator.validate(data);
+    await this.checkUserAlreadyExists(validatedData);
+
     const now = new Date();
 
     const user = await this.createUser(validatedData, now);
@@ -40,7 +43,6 @@ export class CreateAccountUseCase {
     const user = await this.userRepository.create({
       id: randomUUID(),
       email: data.user.email,
-      phone: data.user.phone,
       passwordHash,
       role: data.user.role,
       createdAt: now,
@@ -50,7 +52,6 @@ export class CreateAccountUseCase {
     return {
       id: user.id,
       email: user.email,
-      phone: user.phone,
       role: user.role,
     };
   }
@@ -60,13 +61,12 @@ export class CreateAccountUseCase {
     data: CreateAccountUseCase.Input['candidate'],
     now: Date,
   ): Promise<CreateAccountUseCase.CandidateOutput> {
-    if (!data) throw new Error('Candidate data is required');
-
     const candidate = await this.candidateRepository.create({
       id: randomUUID(),
       userId,
-      fullName: data.fullName,
-      bio: data.bio,
+      fullName: data!.fullName,
+      bio: data!.bio,
+      phone: data!.phone,
       tags: [],
       createdAt: now,
       updatedAt: now,
@@ -75,6 +75,7 @@ export class CreateAccountUseCase {
     return {
       id: candidate.id,
       fullName: candidate.fullName,
+      phone: candidate.phone,
       bio: candidate.bio,
       tags: candidate.tags.map(tag => ({ id: tag.id, name: tag.name })),
     };
@@ -85,15 +86,13 @@ export class CreateAccountUseCase {
     data: CreateAccountUseCase.Input['company'],
     now: Date,
   ): Promise<CreateAccountUseCase.CompanyOutput> {
-    if (!data) throw new Error('Company data is required');
-
     const company = await this.companyRepository.create({
       id: randomUUID(),
       userId,
-      name: data.name,
-      document: data.document,
-      contactName: data.contactName,
-      phone: data.phone,
+      name: data!.name,
+      document: data!.document,
+      contactName: data!.contactName,
+      phone: data!.phone,
       createdAt: now,
       updatedAt: now,
     });
@@ -106,19 +105,37 @@ export class CreateAccountUseCase {
       phone: company.phone,
     };
   }
+
+  private async checkUserAlreadyExists(input: CreateAccountUseCase.Input): Promise<void> {
+    const user = await this.userRepository.findBy({ email: input.user.email });
+
+    if (user) {
+      throw new AlreadyExistsError('User with this email already exists');
+    }
+
+    if (!input.company) {
+      return;
+    }
+
+    const company = await this.companyRepository.findBy({ document: input.company.document });
+
+    if (company) {
+      throw new AlreadyExistsError('Company with this document already exists');
+    }
+  }
 }
 
 export namespace CreateAccountUseCase {
   export type Input = {
     user: {
       email: string;
-      phone: string;
       password: string;
       role: typeof Roles.CANDIDATE | typeof Roles.EMPLOYER;
     };
     candidate?: {
       fullName: string;
       bio: string;
+      phone: string;
     };
     company?: {
       name: string;
@@ -131,7 +148,6 @@ export namespace CreateAccountUseCase {
   export type UserOutput = {
     id: string;
     email: string;
-    phone: string;
     role: string;
   };
 
@@ -139,6 +155,7 @@ export namespace CreateAccountUseCase {
     id: string;
     fullName: string;
     bio: string;
+    phone: string;
     tags: Array<{ id: string; name: string }>;
   };
 
