@@ -1,6 +1,10 @@
 import { CreateAccountZodValidator } from '@/infra/services/shared/zod/create-account-zod-validator';
 import { ServicesDI } from './services';
-import { CreateAccountUseCase } from '@/application/usecases/account';
+import { CreateAccountUseCase, LoginUsecase, UploadImageUseCase } from '@/application/usecases/account';
+import { UpdateCandidateUseCase, UploadResumeUseCase } from '@/application/usecases/candidate';
+import { CreateVacancyZodValidator, DeleteVacancyZodValidator, LoginZodValidator, UpdateCandidateZodValidator, UploadImageZodValidator, UploadResumeZodValidator } from '@/infra/services/shared/zod';
+import { CreateVacancyUseCase, DeleteVacancyUseCase, UpdateVacancyUseCase } from '@/application/usecases/company';
+import { UpdateVacancyZodValidator } from '@/infra/services/shared/zod/update-vacancy-zod-validator';
 
 export function configureUseCases(container: ServicesDI) {
   return container
@@ -15,6 +19,62 @@ export function configureUseCases(container: ServicesDI) {
       UserRepository,
       CandidateRepository,
       CompanyRepository,
+    ))
+    .add('LoginUsecase', ({
+      JWTService,
+      HashingService,
+      UserRepository,
+    }) => new LoginUsecase(
+      new LoginZodValidator(),
+      UserRepository,
+      HashingService,
+      JWTService,
+    ))
+    .add('UploadImageUseCase', ({
+      StorageService,
+      UserRepository,
+    }) => new UploadImageUseCase(
+      new UploadImageZodValidator(),
+      UserRepository,
+      StorageService,
+    ))
+    .add('UploadResumeUseCase', ({
+      CandidateRepository,
+      StorageService,
+    }) => new UploadResumeUseCase(
+      new UploadResumeZodValidator(),
+      CandidateRepository,
+      StorageService,
+    ))
+    .add('UpdateCandidateUseCase', ({
+      CandidateRepository,
+    }) => new UpdateCandidateUseCase(
+      new UpdateCandidateZodValidator(),
+      CandidateRepository,
+    ))
+    .add('CreateVacancyUseCase', ({
+      CompanyRepository,
+      VacancyRepository,
+    }) => new CreateVacancyUseCase(
+      new CreateVacancyZodValidator(),
+      CompanyRepository,
+      VacancyRepository,
+    ))
+    .add('DeleteVacancyUseCase', ({
+      CompanyRepository,
+      VacancyRepository,
+    }) => new DeleteVacancyUseCase(
+      new DeleteVacancyZodValidator(),
+      CompanyRepository,
+      VacancyRepository,
+    ))
+    .add('UpdateVacancyUseCase', ({
+      CompanyRepository,
+      VacancyRepository,
+    }) => new UpdateVacancyUseCase(
+      new UpdateVacancyZodValidator(),
+      CompanyRepository,
+      VacancyRepository,
     ));
 }
 
