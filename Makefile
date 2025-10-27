@@ -11,3 +11,12 @@ docker-test:
 docker-test-down:
 	@docker compose -f docker-compose.test.yml down
 	@echo "✅ Test container is down."
+
+config-s3:
+	@echo "Configuring local S3 bucket..."
+	@aws --endpoint-url=http://localhost:4566 s3 mb s3://hirable-bucket
+	@echo "✅ Local S3 bucket configured."
+
+check-s3:
+	@echo "Checking local S3 buckets..."
+	@aws --endpoint-url=http://localhost:4566 s3 ls
