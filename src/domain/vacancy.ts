@@ -1,4 +1,4 @@
-import { VacancyTag } from './vacancy-tag';
+import { Tag } from './tag';
 
 export const VacancyStatuses = {
   OPEN: 'OPEN',
@@ -26,6 +26,6 @@ export type Vacancy = {
   status: VacancyStatus;
   modality: Modality;
   createdAt: Date;
-  tags?: Array<VacancyTag>
+  tags?: Array<Tag>;
   updatedAt: Date;
 };

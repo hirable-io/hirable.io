@@ -6,8 +6,10 @@ export type Candidate = {
   user?: User;
   fullName: string;
   bio: string;
+  phone: string;
   resumeUrl?: string;
+  linkedInUrl?: string;
   tags: Array<Tag>;
   createdAt: Date;
   updatedAt: Date;
-}
+};
