@@ -6,9 +6,17 @@ import {
   CompanyEntity,
   CandidateEntity,
   TagEntity,
+  VacancyEntity,
+  JobApplicationEntity,
 } from '@/infra/orm/typeorm/entities';
 import {
   AddInitialEntities,
+  AddImageUrlToUser,
+  AddLinkedidUrlToCandidate,
+  AddPhoneToCandidateEntity,
+  CreateVacancyEntity,
+  UpdateVacancyRelations,
+  CreateJobApplicationEntity,
 } from '@/infra/orm/typeorm/migrations';
 
 const defaultConfig = {
@@ -18,9 +26,17 @@ const defaultConfig = {
     CompanyEntity,
     CandidateEntity,
     TagEntity,
+    VacancyEntity,
+    JobApplicationEntity,
   ],
   migrations: [
     AddInitialEntities,
+    AddImageUrlToUser,
+    AddLinkedidUrlToCandidate,
+    AddPhoneToCandidateEntity,
+    CreateVacancyEntity,
+    UpdateVacancyRelations,
+    CreateJobApplicationEntity,
   ],
 };
 

@@ -23,10 +23,6 @@ export const UserEntity = new EntitySchema<UserSchema>({
       name: 'password_hash',
       type: 'varchar',
     },
-    phone: {
-      name: 'phone',
-      type: 'varchar',
-    },
     role: {
       name: 'role',
       type: 'varchar',
@@ -40,6 +36,11 @@ export const UserEntity = new EntitySchema<UserSchema>({
       name: 'updated_at',
       type: 'timestamp',
       updateDate: true,
+    },
+    imageUrl: {
+      name: 'image_url',
+      type: 'varchar',
+      nullable: true,
     },
   },
   relations: {
