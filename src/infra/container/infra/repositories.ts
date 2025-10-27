@@ -3,7 +3,8 @@ import { dataSource } from '@/infra/orm/typeorm/datasource';
 import {
   UserTypeOrmRepository,
   CandidateTypeOrmRepository,
-  CompanyTypeOrmRepository
+  CompanyTypeOrmRepository,
+  VacancyTypeOrmRepository
 } from '@/infra/orm/typeorm/repositories';
 
 export function configureRepositories() {
@@ -12,7 +13,8 @@ export function configureRepositories() {
     .add('DatasourceManager', () => dataSource.manager)
     .add('UserRepository', () => new UserTypeOrmRepository(dataSource))
     .add('CandidateRepository', () => new CandidateTypeOrmRepository(dataSource))
-    .add('CompanyRepository', () => new CompanyTypeOrmRepository(dataSource));
+    .add('CompanyRepository', () => new CompanyTypeOrmRepository(dataSource))
+    .add('VacancyRepository', () => new VacancyTypeOrmRepository(dataSource));
 }
 
 export type RepositoriesDI = ReturnType<typeof configureRepositories>;
