@@ -1,8 +1,8 @@
-import { AlreadyExistsError, NotFoundError } from '@/application/errors';
-import { CandidateRepository, JobApplicationRepository, VacancyRepository } from '@/application/repositories';
+import { randomUUID } from 'node:crypto';
 import { Validator } from '@/application/services';
 import { Candidate, JobApplication } from '@/domain';
-import { randomUUID } from 'node:crypto';
+import { AlreadyExistsError, NotFoundError } from '@/application/errors';
+import { CandidateRepository, JobApplicationRepository, VacancyRepository } from '@/application/repositories';
 
 export class CreateJobApplicationUseCase {
   constructor(
@@ -29,8 +29,6 @@ export class CreateJobApplicationUseCase {
     if (!vacancy) {
       throw new NotFoundError('Vacancy not found');
     }
-
-    return vacancy;
   }
 
   private async findCandidate(userId: string) {

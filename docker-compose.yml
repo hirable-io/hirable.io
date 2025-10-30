@@ -41,6 +41,18 @@ services:
       - localstack_data:/var/lib/localstack
       - /var/run/docker.sock:/var/run/docker.sock
 
+  redis:
+    image: redis:7.2.4
+    env_file:
+      - env/.env.local
+    container_name: hirable.cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --requirepass redispw
+    restart: always
+
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: hirable-pgadmin
@@ -56,5 +68,6 @@ services:
 volumes:
   postgres_data:
   pgadmin-data:
+  redis_data:
   localstack_data:
     driver: local

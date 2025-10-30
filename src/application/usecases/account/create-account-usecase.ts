@@ -156,7 +156,7 @@ export namespace CreateAccountUseCase {
     fullName: string;
     bio: string;
     phone: string;
-    tags: Array<{ id: string; name: string }>;
+    tags: Array<{ id: number; name: string }>;
   };
 
   export type CompanyOutput = {

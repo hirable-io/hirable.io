@@ -15,6 +15,9 @@ const envSchema = z.object({
   AWS_SECRET_ACCESS_KEY: z.string().default('local'),
   AWS_S3_BUCKET: z.string().default('hirable-bucket'),
   AWS_S3_ENDPOINT: z.string().default('http://localhost:4566'),
+  REDIS_URL: z.string(),
+  GMAIL_USER: z.string().email(),
+  GMAIL_PASSWORD: z.string().min(1),
 });
 
 const parsed = envSchema.safeParse(process.env);
