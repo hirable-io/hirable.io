@@ -12,11 +12,11 @@ export class CreateAccountZodValidator implements Validator<CreateAccountUseCase
         email: z.string().email(),
         password: z.string().nonempty(),
         role: z.enum([Roles.CANDIDATE, Roles.EMPLOYER]),
-        phone: z.string().nonempty().transform((phone) => phone.replace(/\D/g, '')),
       }),
       candidate: z.object({
         fullName: z.string().min(3),
         bio: z.string().default(''),
+        phone: z.string().nonempty().transform((phone) => phone.replace(/\D/g, '')),
       }).optional(),
       company: z.object({
         name: z.string().min(2),
@@ -68,6 +68,7 @@ export class CreateAccountZodValidator implements Validator<CreateAccountUseCase
     if (!result.success) {
       throw new ValidationError(result.error.issues);
     }
+
     return result.data;
   }
 }

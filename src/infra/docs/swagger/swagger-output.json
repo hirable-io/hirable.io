@@ -1,0 +1,85 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Hirable.io - API",
+    "description": "Documentação automática com Swagger",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3021",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "description": "Health check da aplicação",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Registrar usuário",
+        "description": "Cria um novo usuário (Candidate ou Company) com os dados fornecidos",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Dados para registro",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "email": { "type": "string", "example": "email@email.com" },
+                    "password": { "type": "string", "example": "minhasenha" },
+                    "role": { "type": "string", "enum": ["CANDIDATE", "COMPANY"], "example": "CANDIDATE" },
+                    "phone": { "type": "string", "example": "61983427464" }
+                  },
+                  "required": ["email", "password", "role", "phone"]
+                },
+                "candidate": {
+                  "type": "object",
+                  "properties": {
+                    "fullName": { "type": "string", "example": "Arthur Ribeiro" },
+                    "bio": { "type": "string", "example": "Thats my bio" }
+                  }
+                },
+                "company": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string", "example": "EMPRESA LTDA." },
+                    "document": { "type": "string", "example": "42.524.011/0000-30" },
+                    "contactName": { "type": "string", "example": "Algum nome" },
+                    "phone": { "type": "string", "example": "61987651234" }
+                  }
+                }
+              },
+              "required": ["user"]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso"
+          },
+          "400": {
+            "description": "Erro de validação nos dados enviados"
+          },
+          "409": {
+            "description": "Usuário já existe"
+          }
+        }
+      }
+    }
+  }
+}

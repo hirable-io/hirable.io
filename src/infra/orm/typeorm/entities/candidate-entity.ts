@@ -23,6 +23,15 @@ export const CandidateEntity = new EntitySchema<CandidateSchema>({
       type: 'varchar',
       nullable: true,
     },
+    phone: {
+      name: 'phone',
+      type: 'varchar',
+    },
+    linkedInUrl: {
+      name: 'linkedin_url',
+      type: 'varchar',
+      nullable: true,
+    },
     userId: {
       name: 'user_id',
       type: 'uuid',

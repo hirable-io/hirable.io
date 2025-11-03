@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ApiError } from '@/application/errors';
+import { MulterError } from 'multer';
+import { parseMulterError } from '@/helpers';
 
 export function errorHandler(
   err: ApiError | Error,
@@ -13,6 +15,12 @@ export function errorHandler(
       fields: err.extraFields?.fields,
       message: err.message,
       code: err.code,
+    });
+  } else if (err instanceof MulterError) {
+    const { status, message } = parseMulterError(err.code);
+    res.status(status).json({
+      error: 'ValidationError',
+      message,
     });
   } else {
     res.status(500).json({
