@@ -11,14 +11,14 @@ export function loggerMiddleware(
 
   logger.info({
     requestId,
-    msg: `${req.method} ${req.url} received.`,
+    msg: `${req.method} ${req.originalUrl} received.`,
     event: 'REQUEST_RECEIVED',
   });
 
   res.on('finish', () => {
     logger.info({
       requestId,
-      msg: `${req.method} ${req.url} finished with status ${res.statusCode}.`,
+      msg: `${req.method} ${req.originalUrl} finished with status ${res.statusCode}.`,
       status: res.statusCode,
       event: 'REQUEST_FINISHED',
     });

@@ -83,4 +83,25 @@ export class VacancyTypeOrmRepository implements VacancyRepository {
   async delete(input: VacancyRepository.Delete.Input): Promise<VacancyRepository.Delete.Output> {
     await this.repository.delete({ id: input.id });
   }
+
+  async findMany(input: VacancyRepository.FindMany.Input): Promise<VacancyRepository.FindMany.Output> {
+    const queryBuilder = this.repository.createQueryBuilder('vacancy');
+    const totalAmount = await this.repository.count({ where: { companyId: input.companyId } });
+
+    if (input.companyId) {
+      queryBuilder.andWhere('vacancy.companyId = :companyId', { companyId: input.companyId });
+    }
+
+    const limit = input.limit ?? 10;
+    const offset = input.offset ?? 0;
+
+    queryBuilder.take(limit).skip(offset).orderBy('vacancy.createdAt', 'DESC');
+
+    const vacancies = await queryBuilder.getMany();
+
+    return {
+      vacancies,
+      total: totalAmount,
+    };
+  }
 }

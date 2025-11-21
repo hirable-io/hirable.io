@@ -54,4 +54,21 @@ router.put(
   }
 );
 
+router.get(
+  '/vacancy',
+  authenticationMiddleware,
+  authorizationMiddleware([Roles.EMPLOYER]),
+  async (req: Request, res: Response) => {
+    const usecase = container.get('ListCompanyVacancyUseCase');
+
+    const result = await usecase.execute({
+      userId: req.user.userId,
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      offset: req.query.offset ? Number(req.query.offset) : undefined,
+    });
+
+    return res.status(200).json(result);
+  }
+);
+
 export { router as companyRoute };

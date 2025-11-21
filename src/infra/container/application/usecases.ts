@@ -2,9 +2,10 @@ import { CreateAccountZodValidator } from '@/infra/services/shared/zod/create-ac
 import { ServicesDI } from './services';
 import { CreateAccountUseCase, LoginUsecase, UploadImageUseCase } from '@/application/usecases/account';
 import { UpdateCandidateUseCase, UploadResumeUseCase } from '@/application/usecases/candidate';
-import { CreateVacancyZodValidator, DeleteVacancyZodValidator, LoginZodValidator, UpdateCandidateZodValidator, UploadImageZodValidator, UploadResumeZodValidator } from '@/infra/services/shared/zod';
-import { CreateVacancyUseCase, DeleteVacancyUseCase, UpdateVacancyUseCase } from '@/application/usecases/company';
+import { CreateVacancyZodValidator, DeleteVacancyZodValidator, ListCompanyVacancyZodValidator, LoginZodValidator, UpdateCandidateZodValidator, UploadImageZodValidator, UploadResumeZodValidator } from '@/infra/services/shared/zod';
+import { CreateVacancyUseCase, DeleteVacancyUseCase, UpdateVacancyUseCase, ListCompanyVacancyUseCase } from '@/application/usecases/company';
 import { UpdateVacancyZodValidator } from '@/infra/services/shared/zod/update-vacancy-zod-validator';
+import { ListTagsUsecase } from '@/application/usecases/tags';
 
 export function configureUseCases(container: ServicesDI) {
   return container
@@ -75,6 +76,19 @@ export function configureUseCases(container: ServicesDI) {
       new UpdateVacancyZodValidator(),
       CompanyRepository,
       VacancyRepository,
+    ))
+    .add('ListCompanyVacancyUseCase', ({
+      CompanyRepository,
+      VacancyRepository,
+    }) => new ListCompanyVacancyUseCase(
+      new ListCompanyVacancyZodValidator(),
+      CompanyRepository,
+      VacancyRepository,
+    ))
+    .add('ListTagsUsecase', ({
+      TagRepository,
+    }) => new ListTagsUsecase(
+      TagRepository,
     ));
 }
 

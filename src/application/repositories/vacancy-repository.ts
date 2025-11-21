@@ -14,6 +14,19 @@ export namespace VacancyRepository {
     export type Output = Vacancy | null;
   }
 
+  export namespace FindMany {
+    export type Input = {
+      companyId: string;
+      limit?: number;
+      offset?: number;
+    };
+
+    export type Output = {
+      vacancies: Vacancy[];
+      total: number;
+    };
+  }
+
   export namespace List {
     export type Input = {
       limit?: number;
@@ -60,4 +73,7 @@ export interface VacancyRepository {
   delete(
     input: VacancyRepository.Delete.Input,
   ): Promise<VacancyRepository.Delete.Output>;
+  findMany(
+    input: VacancyRepository.FindMany.Input,
+  ): Promise<VacancyRepository.FindMany.Output>;
 }
