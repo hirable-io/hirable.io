@@ -7,7 +7,6 @@ import { CreateVacancyUseCase, DeleteVacancyUseCase, UpdateVacancyUseCase, ListC
 import { UpdateVacancyZodValidator } from '@/infra/services/shared/zod/update-vacancy-zod-validator';
 import { ListTagsUsecase } from '@/application/usecases/tags';
 import { CreateJobApplicationUseCase, FetchCandidateApplicationsUseCase, FetchVacancyApplicationsUseCase, UpdateJobApplicationStatusUseCase } from '@/application/usecases/job-application';
-import { C } from 'vitest/dist/chunks/reporters.d.BFLkQcL6.js';
 
 export function configureUseCases(container: ServicesDI) {
   return container
