@@ -1,4 +1,4 @@
-import { JobApplication } from '@/domain';
+import { JobApplication, JobApplicationStatus } from '@/domain';
 
 export namespace JobApplicationRepository {
   export namespace Create {
@@ -19,9 +19,28 @@ export namespace JobApplicationRepository {
     export type Input = Partial<{
       candidateId: string;
       vacancyId: string;
+      limit?: number;
+      offset?: number;
     }>;
 
-    export type Output = Array<JobApplication>;
+    export type Relations = Partial<{
+      candidate: boolean;
+      vacancy: boolean;
+    }>;
+
+    export type Output = {
+      jobApplications: JobApplication[];
+      total: number;
+    };
+  }
+
+  export namespace SetStatus {
+    export type Input = {
+      id: string;
+      status: JobApplicationStatus;
+    };
+
+    export type Output = JobApplication;
   }
 
   export namespace Delete {
@@ -36,6 +55,6 @@ export namespace JobApplicationRepository {
 export interface JobApplicationRepository {
   create(input: JobApplicationRepository.Create.Input): Promise<JobApplicationRepository.Create.Output>;
   findBy(input: JobApplicationRepository.FindBy.Input): Promise<JobApplicationRepository.FindBy.Output>;
-  list(input: JobApplicationRepository.List.Input): Promise<JobApplicationRepository.List.Output>;
+  list(input: JobApplicationRepository.List.Input, relations?: JobApplicationRepository.List.Relations): Promise<JobApplicationRepository.List.Output>;
   delete(input: JobApplicationRepository.Delete.Input): Promise<JobApplicationRepository.Delete.Output>;
 }

@@ -18,6 +18,7 @@ import {
   UpdateVacancyRelations,
   CreateJobApplicationEntity,
   AddCascadeToJobApplication,
+  AddStatusToJobApplication,
 } from '@/infra/orm/typeorm/migrations';
 
 const defaultConfig = {
@@ -39,6 +40,7 @@ const defaultConfig = {
     UpdateVacancyRelations,
     CreateJobApplicationEntity,
     AddCascadeToJobApplication,
+    AddStatusToJobApplication,
   ],
 };
 

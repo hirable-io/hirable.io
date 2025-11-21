@@ -6,3 +6,4 @@ export * from './1761528679375-create-vacancy-entity';
 export * from './1761533442076-update-vacancy-relations';
 export * from './1761536039754-create-job-application-entity';
 export * from './1763687864656-add-cascade-to-job-application';
+export * from './1763689735705-add-status-to-job-application';

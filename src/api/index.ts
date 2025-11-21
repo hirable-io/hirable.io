@@ -3,7 +3,7 @@ import { env } from '@/env';
 import express, { Router } from 'express';
 import { errorHandler, loggerMiddleware } from '@/api/middlewares';
 import health from './routes/health';
-import { authRoute, userRoute, candidateRoute, companyRoute, tagRoute } from '@/api/routes';
+import { authRoute, userRoute, candidateRoute, companyRoute, tagRoute, jobApplicationRoute } from '@/api/routes';
 
 import swaggerUi from 'swagger-ui-express';
 import swaggerFile from '@/infra/docs/swagger/swagger-output.json';
@@ -25,6 +25,7 @@ api.use('/user', userRoute);
 api.use('/candidate', candidateRoute);
 api.use('/company', companyRoute);
 api.use('/tags', tagRoute);
+api.use('/job', jobApplicationRoute);
 
 app.use('/api/v1', api);
 

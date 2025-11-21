@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { Validator } from '@/application/services';
-import { Candidate, JobApplication } from '@/domain';
+import { Candidate, JobApplication, JobApplicationStatuses } from '@/domain';
 import { AlreadyExistsError, NotFoundError } from '@/application/errors';
 import { CandidateRepository, JobApplicationRepository, VacancyRepository } from '@/application/repositories';
 
@@ -52,10 +52,11 @@ export class CreateJobApplicationUseCase {
     }
 
     const jobApplication = await this.jobApplicationRepository.create({
+      id: randomUUID(),
       candidateId: candidate.id,
       vacancyId,
       applicationDate: new Date(),
-      id: randomUUID(),
+      status: JobApplicationStatuses.NEW,
     });
 
     return jobApplication;

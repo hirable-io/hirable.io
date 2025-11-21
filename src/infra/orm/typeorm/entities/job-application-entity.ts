@@ -18,6 +18,10 @@ export const JobApplicationEntity = new EntitySchema<JobApplicationSchema>({
       name: 'candidate_id',
       type: 'uuid',
     },
+    status: {
+      name: 'status',
+      type: 'varchar',
+    },
     vacancyId: {
       name: 'vacancy_id',
       type: 'uuid',

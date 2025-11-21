@@ -7,3 +7,5 @@ export * from  './create-vacancy-zod-validator';
 export * from  './delete-vacancy-zod-validator';
 export * from './create-job-application-zod-validator';
 export * from './list-company-vacancy-zod-validator';
+export * from './fetch-candidate-applications-zod-validator';
+export * from './fetch-vacancy-applications-zod-validator';

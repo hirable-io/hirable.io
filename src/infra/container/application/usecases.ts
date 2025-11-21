@@ -2,10 +2,12 @@ import { CreateAccountZodValidator } from '@/infra/services/shared/zod/create-ac
 import { ServicesDI } from './services';
 import { CreateAccountUseCase, LoginUsecase, UploadImageUseCase } from '@/application/usecases/account';
 import { UpdateCandidateUseCase, UploadResumeUseCase } from '@/application/usecases/candidate';
-import { CreateVacancyZodValidator, DeleteVacancyZodValidator, ListCompanyVacancyZodValidator, LoginZodValidator, UpdateCandidateZodValidator, UploadImageZodValidator, UploadResumeZodValidator } from '@/infra/services/shared/zod';
+import { CreateJobApplicationZodValidator, CreateVacancyZodValidator, DeleteVacancyZodValidator, FetchCandidateApplicationsZodValidator, FetchVacancyApplicationsZodValidator, ListCompanyVacancyZodValidator, LoginZodValidator, UpdateCandidateZodValidator, UploadImageZodValidator, UploadResumeZodValidator } from '@/infra/services/shared/zod';
 import { CreateVacancyUseCase, DeleteVacancyUseCase, UpdateVacancyUseCase, ListCompanyVacancyUseCase } from '@/application/usecases/company';
 import { UpdateVacancyZodValidator } from '@/infra/services/shared/zod/update-vacancy-zod-validator';
 import { ListTagsUsecase } from '@/application/usecases/tags';
+import { CreateJobApplicationUseCase, FetchCandidateApplicationsUseCase, FetchVacancyApplicationsUseCase } from '@/application/usecases/job-application';
+import { C } from 'vitest/dist/chunks/reporters.d.BFLkQcL6.js';
 
 export function configureUseCases(container: ServicesDI) {
   return container
@@ -89,7 +91,36 @@ export function configureUseCases(container: ServicesDI) {
       TagRepository,
     }) => new ListTagsUsecase(
       TagRepository,
-    ));
+    ))
+    .add('CreateJobApplicationUseCase', ({
+      VacancyRepository,
+      CandidateRepository,
+      JobApplicationRepository,
+    }) => new CreateJobApplicationUseCase(
+      new CreateJobApplicationZodValidator(),
+      VacancyRepository,
+      CandidateRepository,
+      JobApplicationRepository,
+    ))
+    .add('FetchCandidateApplicationsUseCase', ({
+      CandidateRepository,
+      JobApplicationRepository,
+    }) => new FetchCandidateApplicationsUseCase(
+      new FetchCandidateApplicationsZodValidator(),
+      CandidateRepository,
+      JobApplicationRepository,
+    )
+  )
+  .add('FetchVacancyApplicationsUseCase', ({
+    CompanyRepository,
+    VacancyRepository,
+    JobApplicationRepository,
+  }) => new FetchVacancyApplicationsUseCase(
+    new FetchVacancyApplicationsZodValidator(),
+    CompanyRepository,
+    VacancyRepository,
+    JobApplicationRepository,
+  ));
 }
 
 export type UseCasesDI = ReturnType<typeof configureUseCases>;
