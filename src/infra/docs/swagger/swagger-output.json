@@ -2,21 +2,29 @@
   "swagger": "2.0",
   "info": {
     "title": "Hirable.io - API",
-    "description": "Documentação automática com Swagger",
+    "description": "Documentação automática com Swagger da API Hirable.io",
     "version": "1.0.0"
   },
   "host": "localhost:3021",
-  "basePath": "/",
-  "schemes": [
-    "http"
-  ],
+  "basePath": "/api/v1",
+  "schemes": ["http"],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Token JWT no formato: Bearer {token}"
+    }
+  },
   "paths": {
     "/health": {
       "get": {
-        "description": "Health check da aplicação",
+        "tags": ["Health"],
+        "summary": "Health check",
+        "description": "Verifica se a aplicação está funcionando",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Aplicação está funcionando"
           }
         }
       }
@@ -40,28 +48,30 @@
                 "user": {
                   "type": "object",
                   "properties": {
-                    "email": { "type": "string", "example": "email@email.com" },
-                    "password": { "type": "string", "example": "minhasenha" },
-                    "role": { "type": "string", "enum": ["CANDIDATE", "COMPANY"], "example": "CANDIDATE" },
-                    "phone": { "type": "string", "example": "61983427464" }
+                    "email": { "type": "string", "format": "email", "example": "candidato@email.com" },
+                    "password": { "type": "string", "example": "senhaSegura123" },
+                    "role": { "type": "string", "enum": ["CANDIDATE", "EMPLOYER"], "example": "CANDIDATE" }
                   },
-                  "required": ["email", "password", "role", "phone"]
+                  "required": ["email", "password", "role"]
                 },
                 "candidate": {
                   "type": "object",
                   "properties": {
-                    "fullName": { "type": "string", "example": "Arthur Ribeiro" },
-                    "bio": { "type": "string", "example": "Thats my bio" }
-                  }
+                    "fullName": { "type": "string", "example": "João Silva" },
+                    "bio": { "type": "string", "example": "Desenvolvedor Full Stack com 5 anos de experiência" },
+                    "phone": { "type": "string", "example": "61987654321" }
+                  },
+                  "required": ["fullName", "bio", "phone"]
                 },
                 "company": {
                   "type": "object",
                   "properties": {
-                    "name": { "type": "string", "example": "EMPRESA LTDA." },
-                    "document": { "type": "string", "example": "42.524.011/0000-30" },
-                    "contactName": { "type": "string", "example": "Algum nome" },
-                    "phone": { "type": "string", "example": "61987651234" }
-                  }
+                    "name": { "type": "string", "example": "Tech Solutions LTDA" },
+                    "document": { "type": "string", "example": "12.345.678/0001-90" },
+                    "contactName": { "type": "string", "example": "Maria Santos" },
+                    "phone": { "type": "string", "example": "61912345678" }
+                  },
+                  "required": ["name", "document", "contactName", "phone"]
                 }
               },
               "required": ["user"]
@@ -70,13 +80,912 @@
         ],
         "responses": {
           "201": {
-            "description": "Usuário criado com sucesso"
+            "description": "Usuário criado com sucesso",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "example": "550e8400-e29b-41d4-a716-446655440000" },
+                    "email": { "type": "string", "example": "candidato@email.com" },
+                    "role": { "type": "string", "example": "CANDIDATE" }
+                  }
+                },
+                "candidate": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "example": "660e8400-e29b-41d4-a716-446655440000" },
+                    "fullName": { "type": "string", "example": "João Silva" },
+                    "bio": { "type": "string", "example": "Desenvolvedor Full Stack com 5 anos de experiência" },
+                    "phone": { "type": "string", "example": "61987654321" },
+                    "tags": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "number", "example": 1 },
+                          "name": { "type": "string", "example": "JavaScript" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Erro de validação nos dados enviados"
           },
           "409": {
             "description": "Usuário já existe"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login",
+        "description": "Autentica um usuário e retorna um token JWT",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Credenciais de login",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": { "type": "string", "format": "email", "example": "candidato@email.com" },
+                "password": { "type": "string", "example": "senhaSegura123" }
+              },
+              "required": ["email", "password"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "accessToken": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImNhbmRpZGF0b0BlbWFpbC5jb20iLCJyb2xlIjoiQ0FORElEQVRFIiwiaWF0IjoxNzA5OTk5OTk5fQ.example"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado ou senha incorreta"
+          }
+        }
+      }
+    },
+    "/user/profile-image": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Upload de imagem de perfil",
+        "description": "Faz upload de uma imagem de perfil para o usuário autenticado",
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "file",
+            "type": "file",
+            "description": "Arquivo de imagem (JPG, PNG ou WebP, máx. 2MB)",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Imagem enviada com sucesso",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "example": "https://s3.amazonaws.com/bucket/profiles/550e8400-e29b-41d4-a716-446655440000.jpg"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Arquivo inválido ou muito grande"
+          },
+          "401": {
+            "description": "Não autenticado"
+          }
+        }
+      }
+    },
+    "/candidate": {
+      "get": {
+        "tags": ["Candidate"],
+        "summary": "Obter dados do candidato",
+        "description": "Retorna os dados completos do candidato autenticado",
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Dados do candidato",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "example": "660e8400-e29b-41d4-a716-446655440000" },
+                "userId": { "type": "string", "example": "550e8400-e29b-41d4-a716-446655440000" },
+                "fullName": { "type": "string", "example": "João Silva" },
+                "bio": { "type": "string", "example": "Desenvolvedor Full Stack com 5 anos de experiência" },
+                "phone": { "type": "string", "example": "61987654321" },
+                "resumeUrl": { "type": "string", "example": "https://s3.amazonaws.com/bucket/resume/curriculo.pdf" },
+                "linkedInUrl": { "type": "string", "example": "https://linkedin.com/in/joaosilva" },
+                "imageUrl": { "type": "string", "example": "https://s3.amazonaws.com/bucket/profiles/foto.jpg" },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "number", "example": 1 },
+                      "name": { "type": "string", "example": "JavaScript" }
+                    }
+                  }
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string", "example": "550e8400-e29b-41d4-a716-446655440000" },
+                    "email": { "type": "string", "example": "candidato@email.com" },
+                    "imageUrl": { "type": "string", "example": "https://s3.amazonaws.com/bucket/profiles/foto.jpg" }
+                  }
+                },
+                "createdAt": { "type": "string", "format": "date-time", "example": "2024-01-15T10:30:00Z" },
+                "updatedAt": { "type": "string", "format": "date-time", "example": "2024-01-15T10:30:00Z" }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Não autorizado (apenas candidatos)"
+          },
+          "404": {
+            "description": "Candidato não encontrado"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Candidate"],
+        "summary": "Atualizar dados do candidato",
+        "description": "Atualiza os dados cadastrais do candidato autenticado",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Dados para atualização",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "fullName": { "type": "string", "example": "João Silva Santos" },
+                "phone": { "type": "string", "example": "61987654321" },
+                "linkedInUrl": { "type": "string", "example": "https://linkedin.com/in/joaosilva" }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Candidato atualizado com sucesso",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "example": "660e8400-e29b-41d4-a716-446655440000" },
+                "userId": { "type": "string", "example": "550e8400-e29b-41d4-a716-446655440000" },
+                "fullName": { "type": "string", "example": "João Silva Santos" },
+                "phone": { "type": "string", "example": "61987654321" },
+                "linkedInUrl": { "type": "string", "example": "https://linkedin.com/in/joaosilva" }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Não autorizado (apenas candidatos)"
+          },
+          "404": {
+            "description": "Candidato não encontrado"
+          }
+        }
+      }
+    },
+    "/candidate/resume": {
+      "post": {
+        "tags": ["Candidate"],
+        "summary": "Upload de currículo",
+        "description": "Faz upload de um currículo em PDF para o candidato autenticado",
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "file",
+            "type": "file",
+            "description": "Arquivo PDF do currículo (máx. 5MB)",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Currículo enviado com sucesso",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "resumeUrl": {
+                  "type": "string",
+                  "example": "https://s3.amazonaws.com/bucket/resume/550e8400-e29b-41d4-a716-446655440000.pdf"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Arquivo inválido ou muito grande"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Não autorizado (apenas candidatos)"
+          }
+        }
+      }
+    },
+    "/candidate/vacancy": {
+      "get": {
+        "tags": ["Candidate"],
+        "summary": "Listar vagas disponíveis",
+        "description": "Lista as vagas disponíveis para o candidato (excluindo as que já se candidatou)",
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Número máximo de resultados",
+            "example": 10
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "type": "integer",
+            "description": "Número de resultados para pular",
+            "example": 0
+          },
+          {
+            "in": "query",
+            "name": "modality",
+            "type": "string",
+            "enum": ["REMOTE", "HYBRID", "ONSITE"],
+            "description": "Filtrar por modalidade",
+            "example": "REMOTE"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de vagas disponíveis",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "vacancies": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string", "example": "770e8400-e29b-41d4-a716-446655440000" },
+                      "companyId": { "type": "string", "example": "880e8400-e29b-41d4-a716-446655440000" },
+                      "title": { "type": "string", "example": "Desenvolvedor Full Stack" },
+                      "description": { "type": "string", "example": "Vaga para desenvolvedor full stack com experiência em React e Node.js" },
+                      "location": { "type": "string", "example": "São Paulo, SP" },
+                      "minimumSalaryValue": { "type": "number", "example": 8000 },
+                      "maximumSalaryValue": { "type": "number", "example": 12000 },
+                      "status": { "type": "string", "enum": ["OPEN", "CLOSED"], "example": "OPEN" },
+                      "modality": { "type": "string", "enum": ["REMOTE", "HYBRID", "ONSITE"], "example": "REMOTE" },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "number", "example": 1 },
+                            "name": { "type": "string", "example": "JavaScript" }
+                          }
+                        }
+                      },
+                      "createdAt": { "type": "string", "format": "date-time", "example": "2024-01-15T10:30:00Z" },
+                      "updatedAt": { "type": "string", "format": "date-time", "example": "2024-01-15T10:30:00Z" }
+                    }
+                  }
+                },
+                "total": { "type": "number", "example": 25 }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Não autorizado (apenas candidatos)"
+          }
+        }
+      }
+    },
+    "/company/vacancy": {
+      "get": {
+        "tags": ["Company"],
+        "summary": "Listar vagas da empresa",
+        "description": "Lista todas as vagas criadas pela empresa autenticada",
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "type": "integer",
+            "description": "Número máximo de resultados",
+            "example": 10
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "type": "integer",
+            "description": "Número de resultados para pular",
+            "example": 0
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de vagas da empresa",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "vacancies": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string", "example": "770e8400-e29b-41d4-a716-446655440000" },
+                      "companyId": { "type": "string", "example": "880e8400-e29b-41d4-a716-446655440000" },
+                      "title": { "type": "string", "example": "Desenvolvedor Full Stack" },
+                      "description": { "type": "string", "example": "Vaga para desenvolvedor full stack" },
+                      "location": { "type": "string", "example": "São Paulo, SP" },
+                      "minimumSalaryValue": { "type": "number", "example": 8000 },
+                      "maximumSalaryValue": { "type": "number", "example": 12000 },
+                      "status": { "type": "string", "enum": ["OPEN", "CLOSED"], "example": "OPEN" },
+                      "modality": { "type": "string", "enum": ["REMOTE", "HYBRID", "ONSITE"], "example": "REMOTE" },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "number", "example": 1 },
+                            "name": { "type": "string", "example": "JavaScript" }
+                          }
+                        }
+                      },
+                      "createdAt": { "type": "string", "format": "date-time", "example": "2024-01-15T10:30:00Z" },
+                      "updatedAt": { "type": "string", "format": "date-time", "example": "2024-01-15T10:30:00Z" }
+                    }
+                  }
+                },
+                "total": { "type": "number", "example": 5 }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Não autorizado (apenas empresas)"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Company"],
+        "summary": "Criar vaga",
+        "description": "Cria uma nova vaga de emprego para a empresa autenticada",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Dados da vaga",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string", "example": "Desenvolvedor Full Stack" },
+                "description": { "type": "string", "example": "Vaga para desenvolvedor full stack com experiência em React e Node.js" },
+                "location": { "type": "string", "example": "São Paulo, SP" },
+                "minimumSalaryValue": { "type": "number", "example": 8000 },
+                "maximumSalaryValue": { "type": "number", "example": 12000 },
+                "status": { "type": "string", "enum": ["OPEN", "CLOSED"], "example": "OPEN" },
+                "modality": { "type": "string", "enum": ["REMOTE", "HYBRID", "ONSITE"], "example": "REMOTE" },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "number", "example": 1 },
+                      "name": { "type": "string", "example": "JavaScript" }
+                    }
+                  },
+                  "example": [
+                    { "id": 1, "name": "JavaScript" },
+                    { "id": 2, "name": "React" }
+                  ]
+                }
+              },
+              "required": ["title", "description", "location", "minimumSalaryValue", "maximumSalaryValue", "status", "modality"]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Vaga criada com sucesso",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "example": "770e8400-e29b-41d4-a716-446655440000" },
+                "companyId": { "type": "string", "example": "880e8400-e29b-41d4-a716-446655440000" },
+                "title": { "type": "string", "example": "Desenvolvedor Full Stack" },
+                "description": { "type": "string", "example": "Vaga para desenvolvedor full stack" },
+                "location": { "type": "string", "example": "São Paulo, SP" },
+                "minimumSalaryValue": { "type": "number", "example": 8000 },
+                "maximumSalaryValue": { "type": "number", "example": 12000 },
+                "status": { "type": "string", "example": "OPEN" },
+                "modality": { "type": "string", "example": "REMOTE" },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "number", "example": 1 },
+                      "name": { "type": "string", "example": "JavaScript" }
+                    }
+                  }
+                },
+                "createdAt": { "type": "string", "format": "date-time", "example": "2024-01-15T10:30:00Z" },
+                "updatedAt": { "type": "string", "format": "date-time", "example": "2024-01-15T10:30:00Z" }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Não autorizado (apenas empresas)"
+          },
+          "404": {
+            "description": "Empresa não encontrada"
+          }
+        }
+      }
+    },
+    "/company/vacancy/{id}": {
+      "put": {
+        "tags": ["Company"],
+        "summary": "Atualizar vaga",
+        "description": "Atualiza os dados de uma vaga existente",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "ID da vaga",
+            "example": "770e8400-e29b-41d4-a716-446655440000"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Dados atualizados da vaga",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string", "example": "Desenvolvedor Full Stack Sênior" },
+                "description": { "type": "string", "example": "Vaga atualizada para desenvolvedor full stack sênior" },
+                "location": { "type": "string", "example": "São Paulo, SP" },
+                "minimumSalaryValue": { "type": "number", "example": 10000 },
+                "maximumSalaryValue": { "type": "number", "example": 15000 },
+                "status": { "type": "string", "enum": ["OPEN", "CLOSED"], "example": "OPEN" },
+                "modality": { "type": "string", "enum": ["REMOTE", "HYBRID", "ONSITE"], "example": "HYBRID" },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "number", "example": 1 },
+                      "name": { "type": "string", "example": "JavaScript" }
+                    }
+                  }
+                }
+              },
+              "required": ["title", "description", "location", "minimumSalaryValue", "maximumSalaryValue", "status", "modality"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vaga atualizada com sucesso",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "example": "770e8400-e29b-41d4-a716-446655440000" },
+                "title": { "type": "string", "example": "Desenvolvedor Full Stack Sênior" },
+                "description": { "type": "string", "example": "Vaga atualizada" },
+                "location": { "type": "string", "example": "São Paulo, SP" },
+                "minimumSalaryValue": { "type": "number", "example": 10000 },
+                "maximumSalaryValue": { "type": "number", "example": 15000 },
+                "status": { "type": "string", "example": "OPEN" },
+                "modality": { "type": "string", "example": "HYBRID" }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Não autorizado (apenas empresas)"
+          },
+          "404": {
+            "description": "Vaga não encontrada"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Company"],
+        "summary": "Deletar vaga",
+        "description": "Remove uma vaga existente",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "string",
+            "required": true,
+            "description": "ID da vaga",
+            "example": "770e8400-e29b-41d4-a716-446655440000"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Vaga deletada com sucesso"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Não autorizado (apenas empresas)"
+          },
+          "404": {
+            "description": "Vaga não encontrada"
+          }
+        }
+      }
+    },
+    "/job/apply": {
+      "post": {
+        "tags": ["Job Application"],
+        "summary": "Aplicar para vaga",
+        "description": "Candidato se candidata para uma vaga de emprego",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "ID da vaga",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "vacancyId": {
+                  "type": "string",
+                  "example": "770e8400-e29b-41d4-a716-446655440000"
+                }
+              },
+              "required": ["vacancyId"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Candidatura realizada com sucesso",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "example": "990e8400-e29b-41d4-a716-446655440000" },
+                "candidateId": { "type": "string", "example": "660e8400-e29b-41d4-a716-446655440000" },
+                "vacancyId": { "type": "string", "example": "770e8400-e29b-41d4-a716-446655440000" },
+                "status": { "type": "string", "enum": ["NEW", "REVIEWED", "ANALISYS"], "example": "NEW" },
+                "applicationDate": { "type": "string", "format": "date-time", "example": "2024-01-15T10:30:00Z" }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Não autorizado (apenas candidatos)"
+          },
+          "404": {
+            "description": "Vaga não encontrada"
+          },
+          "409": {
+            "description": "Candidato já se candidatou para esta vaga"
+          }
+        }
+      }
+    },
+    "/job/applications": {
+      "get": {
+        "tags": ["Job Application"],
+        "summary": "Listar candidaturas do candidato",
+        "description": "Lista todas as candidaturas do candidato autenticado",
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de candidaturas",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jobApplications": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string", "example": "990e8400-e29b-41d4-a716-446655440000" },
+                      "candidateId": { "type": "string", "example": "660e8400-e29b-41d4-a716-446655440000" },
+                      "vacancyId": { "type": "string", "example": "770e8400-e29b-41d4-a716-446655440000" },
+                      "status": { "type": "string", "enum": ["NEW", "REVIEWED", "ANALISYS"], "example": "NEW" },
+                      "applicationDate": { "type": "string", "format": "date-time", "example": "2024-01-15T10:30:00Z" },
+                      "vacancy": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "example": "770e8400-e29b-41d4-a716-446655440000" },
+                          "title": { "type": "string", "example": "Desenvolvedor Full Stack" },
+                          "description": { "type": "string", "example": "Vaga para desenvolvedor full stack" },
+                          "location": { "type": "string", "example": "São Paulo, SP" },
+                          "minimumSalaryValue": { "type": "number", "example": 8000 },
+                          "maximumSalaryValue": { "type": "number", "example": 12000 },
+                          "status": { "type": "string", "example": "OPEN" },
+                          "modality": { "type": "string", "example": "REMOTE" },
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "number", "example": 1 },
+                                "name": { "type": "string", "example": "JavaScript" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "total": { "type": "number", "example": 5 }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Não autorizado (apenas candidatos)"
+          }
+        }
+      }
+    },
+    "/job/vacancy/{vacancyId}/applications": {
+      "get": {
+        "tags": ["Job Application"],
+        "summary": "Listar candidaturas de uma vaga",
+        "description": "Lista todas as candidaturas recebidas para uma vaga específica (apenas para empresas)",
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "vacancyId",
+            "type": "string",
+            "required": true,
+            "description": "ID da vaga",
+            "example": "770e8400-e29b-41d4-a716-446655440000"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de candidaturas da vaga",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jobApplications": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string", "example": "990e8400-e29b-41d4-a716-446655440000" },
+                      "candidateId": { "type": "string", "example": "660e8400-e29b-41d4-a716-446655440000" },
+                      "vacancyId": { "type": "string", "example": "770e8400-e29b-41d4-a716-446655440000" },
+                      "status": { "type": "string", "enum": ["NEW", "REVIEWED", "ANALISYS"], "example": "NEW" },
+                      "applicationDate": { "type": "string", "format": "date-time", "example": "2024-01-15T10:30:00Z" },
+                      "candidate": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "example": "660e8400-e29b-41d4-a716-446655440000" },
+                          "fullName": { "type": "string", "example": "João Silva" },
+                          "bio": { "type": "string", "example": "Desenvolvedor Full Stack" },
+                          "phone": { "type": "string", "example": "61987654321" },
+                          "resumeUrl": { "type": "string", "example": "https://s3.amazonaws.com/bucket/resume/curriculo.pdf" },
+                          "linkedInUrl": { "type": "string", "example": "https://linkedin.com/in/joaosilva" },
+                          "imageUrl": { "type": "string", "example": "https://s3.amazonaws.com/bucket/profiles/foto.jpg" },
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": { "type": "number", "example": 1 },
+                                "name": { "type": "string", "example": "JavaScript" }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "total": { "type": "number", "example": 10 }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Não autorizado (apenas empresas)"
+          },
+          "404": {
+            "description": "Vaga não encontrada"
+          }
+        }
+      }
+    },
+    "/job/application/{applicationId}/status": {
+      "patch": {
+        "tags": ["Job Application"],
+        "summary": "Atualizar status da candidatura",
+        "description": "Atualiza o status de uma candidatura (apenas para empresas)",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "applicationId",
+            "type": "string",
+            "required": true,
+            "description": "ID da candidatura",
+            "example": "990e8400-e29b-41d4-a716-446655440000"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Novo status",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": ["NEW", "REVIEWED", "ANALISYS"],
+                  "example": "REVIEWED"
+                }
+              },
+              "required": ["status"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status atualizado com sucesso",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "example": "990e8400-e29b-41d4-a716-446655440000" },
+                "candidateId": { "type": "string", "example": "660e8400-e29b-41d4-a716-446655440000" },
+                "vacancyId": { "type": "string", "example": "770e8400-e29b-41d4-a716-446655440000" },
+                "status": { "type": "string", "enum": ["NEW", "REVIEWED", "ANALISYS"], "example": "REVIEWED" },
+                "applicationDate": { "type": "string", "format": "date-time", "example": "2024-01-15T10:30:00Z" }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação"
+          },
+          "401": {
+            "description": "Não autenticado"
+          },
+          "403": {
+            "description": "Não autorizado (apenas empresas)"
+          },
+          "404": {
+            "description": "Candidatura não encontrada"
+          }
+        }
+      }
+    },
+    "/tags": {
+      "get": {
+        "tags": ["Tags"],
+        "summary": "Listar tags",
+        "description": "Lista todas as tags disponíveis no sistema",
+        "produces": ["application/json"],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de tags",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "number", "example": 1 },
+                  "name": { "type": "string", "example": "JavaScript" }
+                }
+              },
+              "example": [
+                { "id": 1, "name": "JavaScript" },
+                { "id": 2, "name": "React" },
+                { "id": 3, "name": "Node.js" },
+                { "id": 4, "name": "TypeScript" },
+                { "id": 5, "name": "Python" }
+              ]
+            }
+          },
+          "401": {
+            "description": "Não autenticado"
           }
         }
       }
