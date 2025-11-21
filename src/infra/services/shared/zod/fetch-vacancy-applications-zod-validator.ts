@@ -9,7 +9,7 @@ export class FetchVacancyApplicationsZodValidator implements Validator<FetchVaca
     vacancyId: z.string().uuid(),
   });
 
-  async validate(input: FetchVacancyApplicationsUseCase.Input): Promise<FetchVacancyApplicationsUseCase.Input> {
+  async validate(input: unknown): Promise<FetchVacancyApplicationsUseCase.Input> {
     const result = await this.schema.safeParseAsync(input);
 
     if (!result.success) {

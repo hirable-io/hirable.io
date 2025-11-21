@@ -58,26 +58,82 @@ export class VacancyTypeOrmRepository implements VacancyRepository {
     return savedVacancy;
   }
 
-  async list(filter: VacancyRepository.List.Filter, input: VacancyRepository.List.Input): Promise<VacancyRepository.List.Output> {
+  async list(input: VacancyRepository.List.Input, filter?: VacancyRepository.List.Filter): Promise<VacancyRepository.List.Output> {
     const queryBuilder = this.repository.createQueryBuilder('vacancy');
 
-    if (filter.modality) {
+    if (filter?.modality) {
       queryBuilder.andWhere('vacancy.modality = :modality', { modality: filter.modality });
     }
 
-    if (filter.companyId) {
-      queryBuilder.andWhere('vacancy.companyId = :companyId', { companyId: filter.companyId });
-    }
+    queryBuilder.leftJoinAndSelect('vacancy.tags', 'tags');
 
     const limit = input.limit ?? 10;
     const offset = input.offset ?? 0;
 
     queryBuilder.take(limit).skip(offset);
+
+    const [vacancies, total] = await queryBuilder.orderBy('vacancy.createdAt', 'DESC').getManyAndCount();
+
+    return {
+      vacancies,
+      total,
+    };
+  }
+
+  async listApplied(input: VacancyRepository.ListApplied.Input): Promise<VacancyRepository.ListApplied.Output> {
+    const queryBuilder = this.repository.createQueryBuilder('vacancy');
+
+    queryBuilder.innerJoin(
+      'vacancy.jobApplications', 
+      'jobApplication', 
+      'jobApplication.candidateId = :candidateId', 
+      { candidateId: input.candidateId }
+    );
+
     queryBuilder.leftJoinAndSelect('vacancy.tags', 'tags');
 
-    const vacancies = await queryBuilder.getMany();
+    const limit = input.limit ?? 10;
+    const offset = input.offset ?? 0;
 
-    return vacancies;
+    queryBuilder.take(limit).skip(offset);
+
+    const [vacancies, total] = await queryBuilder.orderBy('vacancy.createdAt', 'DESC').getManyAndCount();
+
+    return {
+      vacancies,
+      total,
+    };
+  }
+
+  async listAvailable(input: VacancyRepository.ListAvailable.Input): Promise<VacancyRepository.ListAvailable.Output> {
+    const queryBuilder = this.repository.createQueryBuilder('vacancy');
+
+    queryBuilder.leftJoin(
+      'vacancy.jobApplications', 
+      'jobApplication', 
+      'jobApplication.candidateId = :candidateId', 
+      { candidateId: input.candidateId }
+    );
+
+    if (input?.modality) {
+      queryBuilder.andWhere('vacancy.modality = :modality', { modality: input.modality });
+    }
+
+    queryBuilder.andWhere('jobApplication.id IS NULL');
+
+    queryBuilder.leftJoinAndSelect('vacancy.tags', 'tags');
+
+    const limit = input.limit ?? 10;
+    const offset = input.offset ?? 0;
+
+    queryBuilder.take(limit).skip(offset);
+
+    const [vacancies, total] = await queryBuilder.orderBy('vacancy.createdAt', 'DESC').getManyAndCount();
+
+    return {
+      vacancies,
+      total,
+    };
   }
 
   async delete(input: VacancyRepository.Delete.Input): Promise<VacancyRepository.Delete.Output> {

@@ -1,12 +1,12 @@
 import { CreateAccountZodValidator } from '@/infra/services/shared/zod/create-account-zod-validator';
 import { ServicesDI } from './services';
 import { CreateAccountUseCase, LoginUsecase, UploadImageUseCase } from '@/application/usecases/account';
-import { UpdateCandidateUseCase, UploadResumeUseCase } from '@/application/usecases/candidate';
-import { CreateJobApplicationZodValidator, CreateVacancyZodValidator, DeleteVacancyZodValidator, FetchCandidateApplicationsZodValidator, FetchVacancyApplicationsZodValidator, ListCompanyVacancyZodValidator, LoginZodValidator, UpdateCandidateZodValidator, UploadImageZodValidator, UploadResumeZodValidator } from '@/infra/services/shared/zod';
+import { ListVacanciesUseCase, UpdateCandidateUseCase, UploadResumeUseCase } from '@/application/usecases/candidate';
+import { CreateJobApplicationZodValidator, CreateVacancyZodValidator, DeleteVacancyZodValidator, FetchCandidateApplicationsZodValidator, FetchVacancyApplicationsZodValidator, ListCompanyVacancyZodValidator, ListVacanciesZodValidator, LoginZodValidator, UpdateCandidateZodValidator, UpdateJobApplicationStatusZodValidator, UploadImageZodValidator, UploadResumeZodValidator } from '@/infra/services/shared/zod';
 import { CreateVacancyUseCase, DeleteVacancyUseCase, UpdateVacancyUseCase, ListCompanyVacancyUseCase } from '@/application/usecases/company';
 import { UpdateVacancyZodValidator } from '@/infra/services/shared/zod/update-vacancy-zod-validator';
 import { ListTagsUsecase } from '@/application/usecases/tags';
-import { CreateJobApplicationUseCase, FetchCandidateApplicationsUseCase, FetchVacancyApplicationsUseCase } from '@/application/usecases/job-application';
+import { CreateJobApplicationUseCase, FetchCandidateApplicationsUseCase, FetchVacancyApplicationsUseCase, UpdateJobApplicationStatusUseCase } from '@/application/usecases/job-application';
 import { C } from 'vitest/dist/chunks/reporters.d.BFLkQcL6.js';
 
 export function configureUseCases(container: ServicesDI) {
@@ -120,6 +120,22 @@ export function configureUseCases(container: ServicesDI) {
     CompanyRepository,
     VacancyRepository,
     JobApplicationRepository,
+  ))
+  .add('UpdateJobApplicationStatusUseCase', ({
+    CompanyRepository,
+    JobApplicationRepository,
+  }) => new UpdateJobApplicationStatusUseCase(
+    new UpdateJobApplicationStatusZodValidator(),
+    CompanyRepository,
+    JobApplicationRepository,
+  ))
+  .add('ListVacanciesUseCase', ({
+    CandidateRepository,
+    VacancyRepository,
+  }) => new ListVacanciesUseCase(
+    new ListVacanciesZodValidator(),
+    CandidateRepository,
+    VacancyRepository,
   ));
 }
 

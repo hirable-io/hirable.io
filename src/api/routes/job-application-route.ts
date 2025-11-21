@@ -34,7 +34,7 @@ router.get(
 });
 
 router.get(
-  '/:vacancyId/applications',
+  '/vacancy/:vacancyId/applications',
   authenticationMiddleware,
   authorizationMiddleware([Roles.EMPLOYER]),
   async (req: Request, res: Response) => {
@@ -42,6 +42,22 @@ router.get(
     const result = await usecase.execute({
       userId: req.user.userId,
       vacancyId: req.params.vacancyId,
+    });
+
+    return res.status(200).json(result);
+  }
+);
+
+router.patch(
+  '/application/:applicationId/status',
+  authenticationMiddleware,
+  authorizationMiddleware([Roles.EMPLOYER]),
+  async (req: Request, res: Response) => {
+    const usecase = container.get('UpdateJobApplicationStatusUseCase');
+    const result = await usecase.execute({
+      userId: req.user.userId,
+      applicationId: req.params.applicationId,
+      status: req.body.status,
     });
 
     return res.status(200).json(result);

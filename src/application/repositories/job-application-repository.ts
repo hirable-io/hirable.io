@@ -7,10 +7,16 @@ export namespace JobApplicationRepository {
   }
 
   export namespace FindBy {
-    export type Input = {
+    export type Input = Partial<{
+      id: string;
       candidateId: string;
       vacancyId: string;
-    };
+    }>;
+
+    export type Relations = Partial<{
+      candidate: boolean;
+      vacancy: boolean;
+    }>;
 
     export type Output = JobApplication | null;
   }
@@ -40,7 +46,7 @@ export namespace JobApplicationRepository {
       status: JobApplicationStatus;
     };
 
-    export type Output = JobApplication;
+    export type Output = JobApplication | null;
   }
 
   export namespace Delete {
@@ -54,7 +60,8 @@ export namespace JobApplicationRepository {
 
 export interface JobApplicationRepository {
   create(input: JobApplicationRepository.Create.Input): Promise<JobApplicationRepository.Create.Output>;
-  findBy(input: JobApplicationRepository.FindBy.Input): Promise<JobApplicationRepository.FindBy.Output>;
+  findBy(input: JobApplicationRepository.FindBy.Input, relations?: JobApplicationRepository.FindBy.Relations): Promise<JobApplicationRepository.FindBy.Output>;
   list(input: JobApplicationRepository.List.Input, relations?: JobApplicationRepository.List.Relations): Promise<JobApplicationRepository.List.Output>;
   delete(input: JobApplicationRepository.Delete.Input): Promise<JobApplicationRepository.Delete.Output>;
+  setStatus(input: JobApplicationRepository.SetStatus.Input): Promise<JobApplicationRepository.SetStatus.Output>;
 }
