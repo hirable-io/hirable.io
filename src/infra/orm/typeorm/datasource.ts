@@ -19,6 +19,7 @@ import {
   CreateJobApplicationEntity,
   AddCascadeToJobApplication,
   AddStatusToJobApplication,
+  AddImageUrlToCandidate,
 } from '@/infra/orm/typeorm/migrations';
 
 const defaultConfig = {
@@ -41,6 +42,7 @@ const defaultConfig = {
     CreateJobApplicationEntity,
     AddCascadeToJobApplication,
     AddStatusToJobApplication,
+    AddImageUrlToCandidate,
   ],
 };
 

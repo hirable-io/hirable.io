@@ -11,3 +11,4 @@ export * from './fetch-candidate-applications-zod-validator';
 export * from './fetch-vacancy-applications-zod-validator';
 export * from './update-job-application-status-zod-validator';
 export * from './list-vacancies-zod-validator';
+export * from './get-candidate-data-zod-validator';

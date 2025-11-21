@@ -58,4 +58,19 @@ router.get(
   }
 );
 
+router.get(
+  '/',
+  authenticationMiddleware,
+  authorizationMiddleware([Roles.CANDIDATE]),
+  async (req: Request, res: Response) => {
+    const usecase = container.get('GetCandidateDataUseCase');
+    
+    const result = await usecase.execute({
+      userId: req.user.userId,
+    });
+
+    return res.status(200).json(result);
+  }
+);
+
 export { router as candidateRoute };

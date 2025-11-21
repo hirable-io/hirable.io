@@ -9,6 +9,7 @@ export type Candidate = {
   phone: string;
   resumeUrl?: string;
   linkedInUrl?: string;
+  imageUrl?: string;
   tags: Array<Tag>;
   createdAt: Date;
   updatedAt: Date;
