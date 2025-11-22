@@ -73,4 +73,20 @@ router.get(
   }
 );
 
+router.delete(
+  '/file/:type',
+  authenticationMiddleware,
+  authorizationMiddleware([Roles.CANDIDATE]),
+  async (req: Request, res: Response) => {
+    const usecase = container.get('DeleteCandidateFileUseCase');
+
+    await usecase.execute({
+      userId: req.user.userId,
+      fileType: req.params.type as any,
+    });
+
+    return res.status(204).send();
+  }
+);
+
 export { router as candidateRoute };

@@ -7,9 +7,9 @@ export type Candidate = {
   fullName: string;
   bio: string;
   phone: string;
-  resumeUrl?: string;
+  resumeUrl?: string | null;
   linkedInUrl?: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
   tags: Array<Tag>;
   createdAt: Date;
   updatedAt: Date;

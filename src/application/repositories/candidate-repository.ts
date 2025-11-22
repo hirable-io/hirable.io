@@ -16,7 +16,10 @@ export namespace CandidateRepository {
   }
 
   export namespace Update {
-    export type Input = Partial<Omit<Candidate, 'id' | 'userId'>>;
+    export type Input = Partial<Omit<Candidate, 'id' | 'userId'>> & {
+      resumeUrl?: string | null;
+      imageUrl?: string | null;
+    };
     export type Output = Candidate | null;
   }
 }

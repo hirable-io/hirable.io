@@ -1,0 +1,21 @@
+import { ValidationError } from '@/application/errors';
+import { Validator } from '@/application/services';
+import { DeleteCandidateFileUseCase } from '@/application/usecases/candidate';
+import z from 'zod';
+
+export class DeleteCandidateFileZodValidator implements Validator<DeleteCandidateFileUseCase.Input> {
+  private readonly schema = z.object({
+    userId: z.string().uuid(),
+    fileType: z.enum(['RESUME', 'IMAGE']),
+  });
+
+  async validate(input: unknown): Promise<DeleteCandidateFileUseCase.Input> {
+    const result = await this.schema.safeParseAsync(input);
+
+    if (!result.success) {
+      throw new ValidationError(result.error.issues);
+    }
+
+    return result.data;
+  }
+}
