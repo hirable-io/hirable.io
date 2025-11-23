@@ -15,6 +15,8 @@ export const JobApplicationStatuses = {
   NEW: 'NEW',
   REVIEWED: 'REVIEWED',
   ANALISYS: 'ANALISYS',
+  REJECTED: 'REJECTED',
+  HIRED: 'HIRED',
 } as const;
 
 export type JobApplicationStatus = keyof typeof JobApplicationStatuses;

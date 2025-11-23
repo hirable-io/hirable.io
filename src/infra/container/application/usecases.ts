@@ -1,12 +1,45 @@
 import { CreateAccountZodValidator } from '@/infra/services/shared/zod/create-account-zod-validator';
 import { ServicesDI } from './services';
 import { CreateAccountUseCase, LoginUsecase, UploadImageUseCase } from '@/application/usecases/account';
-import { DeleteCandidateFileUseCase, GetCandidateDataUseCase, ListVacanciesUseCase, UpdateCandidateUseCase, UploadResumeUseCase } from '@/application/usecases/candidate';
-import { CreateJobApplicationZodValidator, CreateVacancyZodValidator, DeleteCandidateFileZodValidator, DeleteVacancyZodValidator, FetchCandidateApplicationsZodValidator, FetchVacancyApplicationsZodValidator, GetCandidateDataZodValidator, ListCompanyVacancyZodValidator, ListVacanciesZodValidator, LoginZodValidator, UpdateCandidateZodValidator, UpdateJobApplicationStatusZodValidator, UploadImageZodValidator, UploadResumeZodValidator } from '@/infra/services/shared/zod';
-import { CreateVacancyUseCase, DeleteVacancyUseCase, UpdateVacancyUseCase, ListCompanyVacancyUseCase } from '@/application/usecases/company';
+import {
+  DeleteCandidateFileUseCase,
+  GetCandidateDataUseCase,
+  ListVacanciesUseCase,
+  UpdateCandidateUseCase,
+  UploadResumeUseCase,
+} from '@/application/usecases/candidate';
+import {
+  CreateJobApplicationZodValidator,
+  CreateVacancyZodValidator,
+  DeleteCandidateFileZodValidator,
+  DeleteVacancyZodValidator,
+  FetchCandidateApplicationsZodValidator,
+  FetchVacancyApplicationsZodValidator,
+  GetCandidateDataZodValidator,
+  ListCompanyVacancyZodValidator,
+  ListVacanciesZodValidator,
+  LoginZodValidator,
+  ProcessJobApplicationZodValidator,
+  UpdateCandidateZodValidator,
+  UpdateJobApplicationStatusZodValidator,
+  UploadImageZodValidator,
+  UploadResumeZodValidator,
+} from '@/infra/services/shared/zod';
+import {
+  CreateVacancyUseCase,
+  DeleteVacancyUseCase,
+  UpdateVacancyUseCase,
+  ListCompanyVacancyUseCase,
+  ProcessJobApplicationUseCase,
+} from '@/application/usecases/company';
 import { UpdateVacancyZodValidator } from '@/infra/services/shared/zod/update-vacancy-zod-validator';
 import { ListTagsUsecase } from '@/application/usecases/tags';
-import { CreateJobApplicationUseCase, FetchCandidateApplicationsUseCase, FetchVacancyApplicationsUseCase, UpdateJobApplicationStatusUseCase } from '@/application/usecases/job-application';
+import {
+  CreateJobApplicationUseCase,
+  FetchCandidateApplicationsUseCase,
+  FetchVacancyApplicationsUseCase,
+  UpdateJobApplicationStatusUseCase,
+} from '@/application/usecases/job-application';
 
 export function configureUseCases(container: ServicesDI) {
   return container
@@ -151,7 +184,23 @@ export function configureUseCases(container: ServicesDI) {
     new DeleteCandidateFileZodValidator(),
     CandidateRepository,
     StorageService,
-  ));
+  ))
+  .add(
+    'ProcessJobApplicationUseCase',
+    ({
+      JobApplicationRepository,
+      CompanyRepository,
+      UserRepository,
+      NotifyService,
+    }) =>
+      new ProcessJobApplicationUseCase(
+        new ProcessJobApplicationZodValidator(),
+        JobApplicationRepository,
+        CompanyRepository,
+        UserRepository,
+        NotifyService,
+      )
+  );
 }
 
 export type UseCasesDI = ReturnType<typeof configureUseCases>;

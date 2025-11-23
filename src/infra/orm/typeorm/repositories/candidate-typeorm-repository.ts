@@ -17,7 +17,10 @@ export class CandidateTypeOrmRepository implements CandidateRepository {
     return candidate;
   }
 
-  async findBy(input: CandidateRepository.FindBy.Input): Promise<CandidateRepository.FindBy.Output> {
+  async findBy(
+    input: CandidateRepository.FindBy.Input,
+    relations?: CandidateRepository.FindBy.Relations,
+  ): Promise<CandidateRepository.FindBy.Output> {
     const queryBuilder = this.repository.createQueryBuilder('candidate');
 
     if (input.id) {
@@ -26,6 +29,10 @@ export class CandidateTypeOrmRepository implements CandidateRepository {
     
     if (input.userId) {
       queryBuilder.andWhere('candidate.userId = :userId', { userId: input.userId });
+    }
+
+    if (relations?.user) {
+      queryBuilder.leftJoinAndSelect('candidate.user', 'user');
     }
 
     queryBuilder.leftJoinAndSelect('candidate.tags', 'tags');

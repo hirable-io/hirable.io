@@ -13,3 +13,4 @@ export * from './update-job-application-status-zod-validator';
 export * from './list-vacancies-zod-validator';
 export * from './get-candidate-data-zod-validator';
 export * from './delete-candidate-file-zod-validator';
+export * from './process-job-application-zod-validator';

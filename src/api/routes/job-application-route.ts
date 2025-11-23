@@ -42,6 +42,8 @@ router.get(
     const result = await usecase.execute({
       userId: req.user.userId,
       vacancyId: req.params.vacancyId,
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      offset: req.query.offset ? Number(req.query.offset) : undefined,
     });
 
     return res.status(200).json(result);

@@ -17,12 +17,19 @@ export class JobApplicationTypeOrmRepository implements JobApplicationRepository
     return jobApplication;
   }
 
-  async findBy(input: JobApplicationRepository.FindBy.Input, relations?: JobApplicationRepository.FindBy.Relations): Promise<JobApplicationRepository.FindBy.Output> {
+  async findBy(
+  input: JobApplicationRepository.FindBy.Input,
+  relations?: JobApplicationRepository.FindBy.Relations
+): Promise<JobApplicationRepository.FindBy.Output> {
+    const where = input.id
+      ? { id: input.id }
+      : {
+          candidateId: input.candidateId,
+          vacancyId: input.vacancyId,
+        };
+
     const jobApplication = await this.repository.findOne({
-      where: {
-        candidateId: input.candidateId,
-        vacancyId: input.vacancyId,
-      },
+      where,
       relations: {
         ...(relations?.candidate ? { candidate: true } : {}),
         ...(relations?.vacancy ? { vacancy: true } : {}),

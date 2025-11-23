@@ -44,6 +44,8 @@ export namespace FetchVacancyApplicationsUseCase {
   export type Input = {
     userId: string;
     vacancyId: string;
+    limit?: number;
+    offset?: number;
   };
 
   export type Output = {

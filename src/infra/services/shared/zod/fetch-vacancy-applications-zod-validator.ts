@@ -7,6 +7,8 @@ export class FetchVacancyApplicationsZodValidator implements Validator<FetchVaca
   private readonly schema = z.object({
     userId: z.string().uuid(),
     vacancyId: z.string().uuid(),
+    limit: z.number().int().min(1).optional(),  
+    offset: z.number().int().min(0).optional(),
   });
 
   async validate(input: unknown): Promise<FetchVacancyApplicationsUseCase.Input> {

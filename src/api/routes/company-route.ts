@@ -71,4 +71,23 @@ router.get(
   }
 );
 
+router.post(
+  '/job-application/process',
+  authenticationMiddleware,
+  authorizationMiddleware([Roles.EMPLOYER]),
+  async (req: Request, res: Response) => {
+    const usecase = container.get('ProcessJobApplicationUseCase');
+
+    const result = await usecase.execute({
+      userId: req.user.userId,
+      applicationId: req.body.applicationId,
+      status: req.body.status,
+      message: req.body.message,
+      sendMessage: req.body.sendMessage,
+    });
+
+    return res.status(200).json(result);
+  }
+);
+
 export { router as companyRoute };
