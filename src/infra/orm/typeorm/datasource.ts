@@ -50,7 +50,7 @@ export const dataSource = new DataSource({
   type: 'postgres',
   port: env.DB_PORT,
   url: env.POSTGRES_URL,
-  ssl: env.APP_ENV === 'dev' ? { rejectUnauthorized: false } : false,
+  ssl: env.APP_ENV === 'prod' ? { rejectUnauthorized: false } : false,
   ...defaultConfig,
 });
 
