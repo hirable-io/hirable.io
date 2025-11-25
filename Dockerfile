@@ -1,18 +1,29 @@
-FROM node:22-alpine AS base
+FROM node:22-alpine AS builder
 
-ENV FORCE_COLOR=1
+WORKDIR /usr/src/app
 
-RUN mkdir -p /home/node/app
-WORKDIR /home/node/app
+COPY package*.json tsconfig.json ./
 
-RUN apk update && apk upgrade && apk add --no-cache bash
+RUN npm ci
 
-COPY ./package.json ./package-lock.json ./tsconfig.json ./
+COPY src ./src
 
-COPY ./env/.env.local ./env/.env.local
+RUN npm run build
 
-RUN npm install
+FROM node:22-alpine AS runner
 
-COPY ./src ./src
+ENV NODE_ENV=production
 
-CMD ["npm", "run", "dev"]
+WORKDIR /usr/src/app
+
+RUN apk add --no-cache bash
+
+COPY package*.json ./
+
+RUN npm ci --only=production && npm cache clean --force
+
+COPY --from=builder /usr/src/app/dist ./dist
+
+USER node
+
+CMD ["node", "dist/server.js"]
