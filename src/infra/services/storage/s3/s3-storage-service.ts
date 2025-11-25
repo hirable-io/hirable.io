@@ -15,7 +15,6 @@ export class S3StorageService implements StorageService {
       Key: fileName,
       Body: buffer,
       ContentType: mimeType,
-      ACL: 'public-read',
     });
 
     await this.s3Client.send(command);
