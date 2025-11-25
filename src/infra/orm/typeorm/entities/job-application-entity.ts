@@ -18,6 +18,10 @@ export const JobApplicationEntity = new EntitySchema<JobApplicationSchema>({
       name: 'candidate_id',
       type: 'uuid',
     },
+    status: {
+      name: 'status',
+      type: 'varchar',
+    },
     vacancyId: {
       name: 'vacancy_id',
       type: 'uuid',
@@ -33,12 +37,14 @@ export const JobApplicationEntity = new EntitySchema<JobApplicationSchema>({
       target: 'candidates',
       joinColumn: { name: 'candidate_id' },
       inverseSide: 'jobApplications',
+      onDelete: 'CASCADE',
     },
     vacancy: {
       type: 'many-to-one',
       target: 'vacancies',
       joinColumn: { name: 'vacancy_id' },
       inverseSide: 'jobApplications',
+      onDelete: 'CASCADE',
     },
   },
 });

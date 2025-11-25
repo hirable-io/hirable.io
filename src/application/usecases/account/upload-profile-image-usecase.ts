@@ -1,12 +1,14 @@
 import { NotFoundError } from '@/application/errors';
-import { UserRepository } from '@/application/repositories';
+import { CandidateRepository, UserRepository } from '@/application/repositories';
 import { StorageService, Validator } from '@/application/services';
+import { Roles } from '@/domain';
 import { randomUUID } from 'node:crypto';
 
 export class UploadImageUseCase {
   constructor(
     private readonly validator: Validator<UploadImageUseCase.Input>,
     private readonly userRepository: UserRepository,
+    private readonly candidateRepository: CandidateRepository,
     private readonly storageService: StorageService,
   ) {}
 
@@ -20,6 +22,16 @@ export class UploadImageUseCase {
     await this.userRepository.update(user.id, {
       imageUrl: url,
     });
+
+    if (user.role === Roles.CANDIDATE) {
+      const candidate = await this.candidateRepository.findBy({ userId: user.id });
+
+      if (candidate) {
+        await this.candidateRepository.update(candidate.id, {
+          imageUrl: url,
+        });
+      }
+    }
 
     return { url };
   }

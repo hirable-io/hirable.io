@@ -22,6 +22,8 @@ export class SendEmailNodemailerService implements SendEmailService {
   }
 
   private baseEmailTemplate(content: string): string {
+    const htmlContent = this.formatMessageContent(content);
+
     return `
       <!DOCTYPE html>
       <html lang="pt-BR">
@@ -70,6 +72,7 @@ export class SendEmailNodemailerService implements SendEmailService {
             color: #4a5568;
             margin-bottom: 30px;
             line-height: 1.8;
+            white-space: pre-wrap;
           }
           .footer {
             background: #f7fafc;
@@ -109,18 +112,15 @@ export class SendEmailNodemailerService implements SendEmailService {
       </head>
       <body>
         <div class="email-container">
-          <!-- Header -->
           <div class="header">
             <div class="logo">Hirable.io</div>
             <div class="tagline">Connecting talents with the best opportunities</div>
           </div>
 
-          <!-- Conteúdo dinâmico -->
           <div class="content">
-            ${content}
+            <div class="message">${htmlContent}</div>
           </div>
 
-          <!-- Footer -->
           <div class="footer">
             <p class="footer-text">© 2025 Hirable.io. All rights reserved.</p>
             <div class="social-links">
@@ -132,5 +132,16 @@ export class SendEmailNodemailerService implements SendEmailService {
         </div>
       </body>
       </html>`;
+  }
+
+  private formatMessageContent(content: string): string {
+    const escaped = content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+
+    return escaped.replace(/\n/g, '<br>');
   }
 }

@@ -17,19 +17,49 @@ export class JobApplicationTypeOrmRepository implements JobApplicationRepository
     return jobApplication;
   }
 
-  async findBy(input: JobApplicationRepository.FindBy.Input): Promise<JobApplicationRepository.FindBy.Output> {
+  async findBy(
+  input: JobApplicationRepository.FindBy.Input,
+  relations?: JobApplicationRepository.FindBy.Relations
+): Promise<JobApplicationRepository.FindBy.Output> {
+    const where = input.id
+      ? { id: input.id }
+      : {
+          candidateId: input.candidateId,
+          vacancyId: input.vacancyId,
+        };
+
     const jobApplication = await this.repository.findOne({
-      where: {
-        candidateId: input.candidateId,
-        vacancyId: input.vacancyId,
+      where,
+      relations: {
+        ...(relations?.candidate ? { candidate: true } : {}),
+        ...(relations?.vacancy ? { vacancy: true } : {}),
       }
     });
 
     return jobApplication;
   }
 
-  async list(input: JobApplicationRepository.List.Input): Promise<JobApplicationRepository.List.Output> {
+  async setStatus(input: JobApplicationRepository.SetStatus.Input): Promise<JobApplicationRepository.SetStatus.Output> {
+    const updated = await this.repository.findOne({ where: { id: input.id } });
+
+    if (!updated) {
+      return null;
+    }
+
+    return await this.repository.save({
+      ...updated,
+      status: input.status,
+    });
+  }
+
+  async list(input: JobApplicationRepository.List.Input, relations?: JobApplicationRepository.List.Relations): Promise<JobApplicationRepository.List.Output> {
     const queryBuilder = this.repository.createQueryBuilder('jobApplication');
+
+    const where: any = {};
+    if (input.candidateId != null) where.candidateId = input.candidateId;
+    if (input.vacancyId != null) where.vacancyId = input.vacancyId;
+    
+    const total = await this.repository.count({ where });
 
     if (input.candidateId) {
       queryBuilder.andWhere('jobApplication.candidateId = :candidateId', { candidateId: input.candidateId });
@@ -39,13 +69,27 @@ export class JobApplicationTypeOrmRepository implements JobApplicationRepository
       queryBuilder.andWhere('jobApplication.vacancyId = :vacancyId', { vacancyId: input.vacancyId });
     }
 
-    queryBuilder.leftJoinAndSelect('jobApplication.candidate', 'candidate');
-    queryBuilder.leftJoinAndSelect('jobApplication.vacancy', 'vacancy');
+    if (relations?.candidate) {
+      queryBuilder.leftJoinAndSelect('jobApplication.candidate', 'candidate');
+    }
+
+    if (relations?.vacancy) {
+      queryBuilder.leftJoinAndSelect('jobApplication.vacancy', 'vacancy');
+    }
+
+    const limit = input.limit ?? 10;
+    const offset = input.offset ?? 0;
+
+    queryBuilder.take(limit);
+    queryBuilder.skip(offset);
 
     const jobApplications = await queryBuilder.getMany();
 
-    return jobApplications;
-  }
+    return {
+      jobApplications,
+      total,
+    };
+}
   
   async delete(input: JobApplicationRepository.Delete.Input): Promise<JobApplicationRepository.Delete.Output> {
     await this.repository.delete({ id: input.id });

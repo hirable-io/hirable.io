@@ -3,3 +3,4 @@ export * from './candidate-repository';
 export * from './company-repository';
 export * from './vacancy-repository';
 export * from './job-application-repository';
+export * from './tag-repository';

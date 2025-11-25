@@ -1,9 +1,10 @@
 import { EntitySchema } from 'typeorm';
-import { Company, Vacancy } from '@/domain';
+import { Company, JobApplication, Vacancy } from '@/domain';
 import { BaseEntity } from './base-entity';
 
 export type VacancySchema = Vacancy & {
   company?: Company,
+  jobApplications?: Array<JobApplication>,
 };
 
 export const VacancyEntity = new EntitySchema<VacancySchema>({
@@ -58,6 +59,11 @@ export const VacancyEntity = new EntitySchema<VacancySchema>({
         joinColumn: { name: 'vacancy_id', referencedColumnName: 'id' },
         inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
       },
+    },
+    jobApplications: {
+      type: 'one-to-many',
+      target: 'job_applications',
+      inverseSide: 'vacancy',
     },
   }
 });

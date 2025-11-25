@@ -40,4 +40,53 @@ router.put(
   }
 );
 
+router.get(
+  '/vacancy',
+  authenticationMiddleware,
+  authorizationMiddleware([Roles.CANDIDATE]),
+  async (req: Request, res: Response) => {
+    const usecase = container.get('ListVacanciesUseCase');
+    
+    const result = await usecase.execute({
+      limit: req.query.limit ? Number(req.query.limit) : undefined,
+      offset: req.query.offset ? Number(req.query.offset) : undefined,
+      modality: req.query.modality as any,
+      userId: req.user.userId,
+    });
+
+    return res.status(200).json(result);
+  }
+);
+
+router.get(
+  '/',
+  authenticationMiddleware,
+  authorizationMiddleware([Roles.CANDIDATE]),
+  async (req: Request, res: Response) => {
+    const usecase = container.get('GetCandidateDataUseCase');
+    
+    const result = await usecase.execute({
+      userId: req.user.userId,
+    });
+
+    return res.status(200).json(result);
+  }
+);
+
+router.delete(
+  '/file/:type',
+  authenticationMiddleware,
+  authorizationMiddleware([Roles.CANDIDATE]),
+  async (req: Request, res: Response) => {
+    const usecase = container.get('DeleteCandidateFileUseCase');
+
+    await usecase.execute({
+      userId: req.user.userId,
+      fileType: req.params.type as any,
+    });
+
+    return res.status(204).send();
+  }
+);
+
 export { router as candidateRoute };

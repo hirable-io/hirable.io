@@ -3,3 +3,5 @@ export * from './auth-route';
 export * from './user-route';
 export * from './candidate-route';
 export * from './company-route';
+export * from './tag-route';
+export * from './job-application-route';

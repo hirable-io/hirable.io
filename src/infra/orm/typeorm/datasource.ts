@@ -17,6 +17,9 @@ import {
   CreateVacancyEntity,
   UpdateVacancyRelations,
   CreateJobApplicationEntity,
+  AddCascadeToJobApplication,
+  AddStatusToJobApplication,
+  AddImageUrlToCandidate,
 } from '@/infra/orm/typeorm/migrations';
 
 const defaultConfig = {
@@ -37,14 +40,17 @@ const defaultConfig = {
     CreateVacancyEntity,
     UpdateVacancyRelations,
     CreateJobApplicationEntity,
+    AddCascadeToJobApplication,
+    AddStatusToJobApplication,
+    AddImageUrlToCandidate,
   ],
 };
 
 export const dataSource = new DataSource({
   type: 'postgres',
-  host: 'localhost',
   port: env.DB_PORT,
   url: env.POSTGRES_URL,
+  ssl: env.APP_ENV === 'dev' ? { rejectUnauthorized: false } : false,
   ...defaultConfig,
 });
 

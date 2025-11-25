@@ -6,6 +6,7 @@ import {
   CompanyTypeOrmRepository,
   VacancyTypeOrmRepository,
   JobApplicationTypeOrmRepository,
+  TagTypeOrmRepository,
 } from '@/infra/orm/typeorm/repositories';
 
 export function configureRepositories() {
@@ -16,7 +17,9 @@ export function configureRepositories() {
     .add('CandidateRepository', () => new CandidateTypeOrmRepository(dataSource))
     .add('CompanyRepository', () => new CompanyTypeOrmRepository(dataSource))
     .add('VacancyRepository', () => new VacancyTypeOrmRepository(dataSource))
-    .add('JobApplicationRepository', () => new JobApplicationTypeOrmRepository(dataSource));
+    .add('JobApplicationRepository', () => new JobApplicationTypeOrmRepository(dataSource))
+    .add('TagRepository', () => new TagTypeOrmRepository(dataSource));
+
 }
 
 export type RepositoriesDI = ReturnType<typeof configureRepositories>;

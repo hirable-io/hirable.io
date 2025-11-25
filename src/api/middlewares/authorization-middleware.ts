@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ForbiddenError } from '@/application/errors';
+import { Roles } from '@/domain';
 
 export function authorizationMiddleware(allowedRoles: string[]) {
   return (req: Request, _res: Response, next: NextFunction) => {
@@ -9,7 +10,7 @@ export function authorizationMiddleware(allowedRoles: string[]) {
       throw new ForbiddenError();
     }
 
-    if (!allowedRoles.includes(user.role)) {
+    if (user.role != Roles.ADMIN && !allowedRoles.includes(user.role)) {
       throw new ForbiddenError();
     }
 
